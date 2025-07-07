@@ -1,0 +1,408 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Amit Kumar Yadav - Geospatial Portfolio</title>
+  <!-- Leaflet core for interactive map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to right, #e3f2fd, #ffffff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #222;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+      background: #fff;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin: 2rem;
+      border-radius: 12px;
+      overflow: hidden;
+      padding-bottom: 2rem;
+    }
+    header {
+      background: linear-gradient(to right, #0d47a1, #1976d2);
+      color: white;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    nav {
+      background-color: #1565c0;
+    }
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: space-around;
+      padding: 0;
+      margin: 0;
+    }
+    nav ul li a {
+      color: white;
+      text-decoration: none;
+      padding: 1rem;
+      display: block;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+    nav ul li a:hover,
+    nav ul li a.active {
+      background-color: #0d47a1;
+    }
+    section {
+      display: none;
+      padding: 2rem;
+      max-width: 900px;
+      margin: auto;
+    }
+    section.active {
+      display: block;
+    }
+    h2 {
+      text-align: center;
+      color: #0d47a1;
+      border-bottom: 2px solid #bbdefb;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .profile-pic {
+      max-width: 150px;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .skills ul, .education ul, .experience ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .skills ul li, .education ul li, .experience ul li {
+      margin: 8px 0;
+      padding: 8px;
+      background-color: #e3f2fd;
+      border-radius: 6px;
+    }
+    .experience-images {
+      text-align: center;
+    }
+    .experience-images img {
+      max-width: 90%;
+      margin: 10px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .contact-details {
+      margin-bottom: 1.5rem;
+      text-align: center;
+      font-size: 1rem;
+    }
+    .contact-form textarea {
+      width: 100%;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 1rem;
+      resize: vertical;
+    }
+    .contact-form button {
+      display: block;
+      margin: 0 auto;
+      padding: 0.75rem 2rem;
+      background-color: #1565c0;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    .contact-form button:hover {
+      background-color: #0d47a1;
+    }
+    p {
+      text-align: center;
+    }
+    /* Geospatial tools styling */
+    .geo-section {
+      margin-bottom: 2.5rem;
+    }
+    #map {
+      height: 350px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      width: 100%;
+      max-width: 860px;
+    }
+    .controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .controls input, .controls button {
+      padding: 0.7rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+    }
+    .controls button {
+      background: #1a2a6c;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .controls button:hover {
+      background: #b21f1f;
+    }
+    .result {
+      background: #f8f8f8;
+      padding: 1rem;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+      min-height: 1.5em;
+      text-align: center;
+    }
+    @media (max-width: 600px) {
+      .controls { flex-direction: column; }
+      .container { padding: 1rem; }
+      section { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Amit Kumar Yadav</h1>
+    <p>7th Semester Student | Geomatics Engineering</p>
+  </header>
+  <nav>
+    <ul>
+      <li><a href="#" class="tab-link active" data-tab="about">About</a></li>
+      <li><a href="#" class="tab-link" data-tab="education">Education</a></li>
+      <li><a href="#" class="tab-link" data-tab="experience">Experience</a></li>
+      <li><a href="#" class="tab-link" data-tab="projects">Projects</a></li>
+      <li><a href="#" class="tab-link" data-tab="skills">Skills</a></li>
+      <li><a href="#" class="tab-link" data-tab="geotools">Geo Tools</a></li>
+      <li><a href="#" class="tab-link" data-tab="contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <section id="about" class="active">
+    <h2>About</h2>
+    <img src="amit.jpg" alt="Amit Kumar Yadav" class="profile-pic">
+    <p>I am Amit Kumar Yadav, currently studying in the 7th semester of Geomatics Engineering. I have hands-on experience in various surveying techniques and hydropower project work.</p>
+  </section>
+
+  <section id="education">
+    <h2>Education</h2>
+    <ul>
+      <li><strong>Bachelor:</strong> Geomatics Engineering (7th Semester)</li>
+      <li><strong>+2:</strong> CCRC (College of Commerce and Resource Center)</li>
+      <li><strong>Schooling:</strong> Monastic Higher Secondary Boarding School</li>
+    </ul>
+  </section>
+
+  <section id="experience">
+    <h2>Experience</h2>
+    <ul>
+      <li>1 Month - Control Survey, Topographical Survey, Triangulation, Resection, Chain Survey, Compass Survey</li>
+      <li>1 Month - Hydropower Survey</li>
+    </ul>
+    <div class="experience-images">
+      <img src="amit1.png.jpeg.jpg" alt="Surveying Activity 1">
+      <img src="amit2.png.jpeg.jpg" alt="Surveying Activity 2">
+    </div>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    <ol>
+      <li>3D Modelling of Khopasi Hydropower</li>
+      <li>Groundwater Potential Mapping of Mahottari</li>
+      <li>Direction Angle Transformer & Angle Visualization Panel</li>
+      <li>Least Cost Path Analysis for Transmission Line from Dhalkebar Substation</li>
+    </ol>
+  </section>
+
+  <section id="skills">
+    <h2>Skills</h2>
+    <div class="skills">
+      <ul>
+        <li>Total Station</li>
+        <li>C Programming</li>
+        <li>C++ Programming</li>
+        <li>JavaScript</li>
+        <li>CSS</li>
+        <li>GIS</li>
+        <li>Web Designing</li>
+        <li>Video Editing</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Geospatial Portfolio Tools Section -->
+  <section id="geotools">
+    <h2>Geospatial Tools</h2>
+    <div class="geo-section">
+      <h3>Interactive Map</h3>
+      <div id="map"></div>
+      <div class="controls">
+        <button id="add-marker">Add Marker</button>
+        <button id="clear-markers">Clear Markers</button>
+      </div>
+    </div>
+    <div class="geo-section">
+      <h3>Coordinate Converter</h3>
+      <div class="controls">
+        <input type="number" id="latitude" placeholder="Latitude" step="any">
+        <input type="number" id="longitude" placeholder="Longitude" step="any">
+        <button id="convert-coords">Convert</button>
+      </div>
+      <div class="result" id="conversion-result">Results will appear here</div>
+    </div>
+    <div class="geo-section">
+      <h3>Distance Measurement</h3>
+      <div class="controls">
+        <input type="text" id="point1" placeholder="lat1, lon1">
+        <input type="text" id="point2" placeholder="lat2, lon2">
+        <button id="calculate-distance">Calculate Distance</button>
+      </div>
+      <div class="result" id="distance-result">Distance will appear here</div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <div class="contact-details">
+      <p><strong>Mobile:</strong> 9812055932</p>
+      <p><strong>Email:</strong> aryanamitk32@gmail.com</p>
+    </div>
+    <form class="contact-form">
+      <textarea rows="5" placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+</div>
+
+<script>
+  // Tab navigation and map initialization logic
+  const links = document.querySelectorAll('.tab-link');
+  const sections = document.querySelectorAll('section');
+  let mapInitialized = false;
+  let map, markers = [];
+
+  links.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      links.forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+      const target = this.getAttribute('data-tab');
+      sections.forEach(sec => {
+        sec.classList.remove('active');
+        if (sec.id === target) {
+          sec.classList.add('active');
+        }
+      });
+      // If Geo Tools tab is activated, initialize or refresh the map
+      if (target === 'geotools') {
+        setTimeout(() => {
+          if (!mapInitialized) {
+            map = L.map('map', {
+              center: [27.7172, 85.3240],
+              zoom: 12,
+              layers: [
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                  attribution: '&copy; OpenStreetMap contributors'
+                })
+              ]
+            });
+            markers = [];
+            // Marker Controls
+            document.getElementById('add-marker').addEventListener('click', function() {
+              const marker = L.marker(map.getCenter()).addTo(map);
+              marker.bindPopup(`Location: ${map.getCenter().lat.toFixed(4)}, ${map.getCenter().lng.toFixed(4)}`).openPopup();
+              markers.push(marker);
+            });
+            document.getElementById('clear-markers').addEventListener('click', function() {
+              markers.forEach(marker => map.removeLayer(marker));
+              markers = [];
+            });
+            // Coordinate Converter
+            document.getElementById('convert-coords').addEventListener('click', function() {
+              const lat = parseFloat(document.getElementById('latitude').value);
+              const lon = parseFloat(document.getElementById('longitude').value);
+              if (!isNaN(lat) && !isNaN(lon)) {
+                const dmsLat = convertToDMS(lat, true);
+                const dmsLon = convertToDMS(lon, false);
+                document.getElementById('conversion-result').innerHTML = `
+                  <div>Decimal: ${lat.toFixed(6)}, ${lon.toFixed(6)}</div>
+                  <div>DMS: ${dmsLat}, ${dmsLon}</div>
+                  <div>UTM: ${convertToUTM(lat, lon)}</div>
+                `;
+              } else {
+                document.getElementById('conversion-result').innerHTML = "Please enter valid coordinates";
+              }
+            });
+            function convertToDMS(coord, isLat) {
+              const absCoord = Math.abs(coord);
+              const deg = Math.floor(absCoord);
+              const min = Math.floor((absCoord - deg) * 60);
+              const sec = ((absCoord - deg - min/60) * 3600).toFixed(2);
+              const direction = isLat ? (coord >= 0 ? 'N' : 'S') : (coord >= 0 ? 'E' : 'W');
+              return `${deg}°${min}'${sec}"${direction}`;
+            }
+            function convertToUTM(lat, lon) {
+              const zone = Math.floor((lon + 180) / 6) + 1;
+              return `Zone ${zone}${lat >= 0 ? 'N' : 'S'}`;
+            }
+            // Distance Measurement
+            document.getElementById('calculate-distance').addEventListener('click', function() {
+              const point1 = document.getElementById('point1').value.split(',').map(Number);
+              const point2 = document.getElementById('point2').value.split(',').map(Number);
+              if (point1.length === 2 && point2.length === 2 &&
+                  !isNaN(point1[0]) && !isNaN(point1[1]) &&
+                  !isNaN(point2[0]) && !isNaN(point2[1])) {
+                const distance = calculateDistance(point1[0], point1[1], point2[0], point2[1]);
+                document.getElementById('distance-result').innerHTML = `Distance: ${distance.toFixed(2)} km`;
+              } else {
+                document.getElementById('distance-result').innerHTML = "Please enter valid coordinates for both points";
+              }
+            });
+            function calculateDistance(lat1, lon1, lat2, lon2) {
+              const R = 6371;
+              const dLat = deg2rad(lat2 - lat1);
+              const dLon = deg2rad(lon2 - lon1);
+              const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+              const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+              return R * c;
+            }
+            function deg2rad(deg) { return deg * (Math.PI/180); }
+            mapInitialized = true;
+          } else {
+            map.invalidateSize();
+          }
+        }, 200); // Delay to ensure section is visible
+      }
+    });
+  });
+
+  document.querySelector('.contact-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    alert('Message sent successfully!');
+  });
+</script>
+</body>
+</html>
